@@ -43,6 +43,7 @@ def make_qid_to_has_ans(dataset):
   return qid_to_has_ans
 
 def normalize_answer(s):
+  """Lower text and remove punctuation, articles and extra whitespace."""
   def remove_articles(text):
     regex = re.compile(r'\b(a|an|the)\b', re.UNICODE)
     return re.sub(regex, ' ', text)
@@ -92,7 +93,7 @@ def get_raw_scores(dataset, preds):
         if qid not in preds:
           print('Missing prediction for %s' % qid)
           continue
-        a_pred = preds[qid]["answer"]
+        a_pred = preds[qid]
         # Take max over all gold answers
         exact_scores[qid] = max(compute_exact(a, a_pred) for a in gold_answers)
         f1_scores[qid] = max(compute_f1(a, a_pred) for a in gold_answers)
@@ -237,10 +238,7 @@ def main():
     with open(OPTS.na_prob_file) as f:
       na_probs = json.load(f)
   else:
-    na_probs = {}
-    for key in preds:
-      na_probs[key] = 0.0
-
+    na_probs = {k: 0.0 for k in preds}
   qid_to_has_ans = make_qid_to_has_ans(dataset)  # maps qid to True/False
   has_ans_qids = [k for k, v in qid_to_has_ans.items() if v]
   no_ans_qids = [k for k, v in qid_to_has_ans.items() if not v]
