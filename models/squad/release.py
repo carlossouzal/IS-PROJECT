@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import torch
 import json
+import os
 
 # %%
 model_name = "deepset/minilm-uncased-squad2"
@@ -26,7 +27,7 @@ def get_predictions(question, context):
     return nlp(QA_input)
 
 # %%
-path = Path("squad/dev-v2.0.json")
+path = Path("./dev-v2.0.json")
 
 with open(path, 'rb') as f:
     squad_dict = json.load(f)
@@ -85,3 +86,4 @@ with open("scores.json", "w") as outfile:
     json.dump(scores, outfile)
 
 
+os.system("python .\evaluate_script.py .\dev-v2.0.json .\predictions.json")
